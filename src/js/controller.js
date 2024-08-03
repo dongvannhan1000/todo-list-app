@@ -38,6 +38,14 @@ class ProjectManager {
     saveProjects() {
         this.storage.saveData('projects', this.projects);
     }
+
+    renameProject(projectId, newName) {
+      const project = this.getProject(projectId);
+      if (project) {
+          project.name = newName;
+          this.saveProjects();
+      }
+  }
 }
 
 class TodoManager {

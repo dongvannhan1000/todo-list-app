@@ -22,12 +22,28 @@ const projectContainer = document.getElementById('projects');
 DOMRenderer.renderProjects(projectManager.projects, projectContainer, domHandler.currentProjectId);
 
 // Bind events
-domHandler.bindProjectEvents(projectContainer, (projectId) => {
-    const project = projectManager.getProject(projectId);
-    const todoContainer = document.getElementById('todos');
-    DOMRenderer.renderTodos(project.getAllTodos(), todoContainer);
-    DOMRenderer.renderProjects(projectManager.projects, projectContainer, projectId);
-});
+domHandler.bindProjectEvents(
+  projectContainer,
+  (projectId) => {
+      const project = projectManager.getProject(projectId);
+      const todoContainer = document.getElementById('todos');
+      DOMRenderer.renderTodos(project.getAllTodos(), todoContainer);
+  },
+  (projectId) => {
+      projectManager.deleteProject(projectId);
+      DOMRenderer.renderProjects(projectManager.projects, projectContainer);
+      if (domHandler.currentProjectId === projectId) {
+          domHandler.currentProjectId = projectManager.projects[0]?.id;
+          if (domHandler.currentProjectId) {
+              const project = projectManager.getProject(domHandler.currentProjectId);
+              const todoContainer = document.getElementById('todos');
+              DOMRenderer.renderTodos(project.getAllTodos(), todoContainer);
+          } else {
+              document.getElementById('todos').innerHTML = '';
+          }
+      }
+  }
+);
 
 const todoContainer = document.getElementById('todos');
 domHandler.bindTodoEvents(todoContainer,

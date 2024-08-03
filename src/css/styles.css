@@ -21,7 +21,7 @@ main {
   padding: 1rem;
 }
 
-header {
+header, footer {
   text-align: center;
 }
 
@@ -46,9 +46,70 @@ header {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+.project-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 5px;
+  border-radius: 4px;
+  background-color: var(--background-color);
+  transition: background-color 0.3s ease;
+}
+
+.project-item:hover {
+  background-color: var(--border-color);
+}
+
 .project-item.selected {
   background-color: var(--primary-color);
   color: white;
+}
+
+.project-name {
+  flex-grow: 1;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.rename-project,
+.delete-project {
+  padding: 5px 10px;
+  margin-left: 5px;
+  font-size: 12px;
+  background-color: var(--secondary-color);
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+}
+
+.project-item:hover .rename-project,
+.project-item:hover .delete-project {
+  opacity: 1;
+}
+
+.rename-project:hover,
+.delete-project:hover {
+  background-color: var(--hover-color);
+}
+
+.delete-project {
+  background-color: #e74c3c;
+}
+
+.delete-project:hover {
+  background-color: #c0392b;
+}
+
+@media (max-width: 768px) {
+  .rename-project,
+  .delete-project {
+      opacity: 1;
+      padding: 3px 6px;
+      font-size: 10px;
+  }
 }
 
 input, textarea, select {

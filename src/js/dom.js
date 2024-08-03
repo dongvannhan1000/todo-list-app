@@ -4,15 +4,29 @@ class DOMRenderer {
     container.innerHTML = '';
     projects.forEach(project => {
         const projectElement = document.createElement('div');
-        projectElement.textContent = project.name;
-        projectElement.dataset.projectId = project.id;
         projectElement.classList.add('project-item');
+        projectElement.dataset.projectId = project.id;
         if (project.id === selectedProjectId) {
             projectElement.classList.add('selected');
         }
+
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = project.name;
+        nameSpan.classList.add('project-name');
+
+        const renameButton = document.createElement('button');
+        renameButton.textContent = 'Rename';
+        renameButton.classList.add('rename-project');
+
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.classList.add('delete-project');
+
+        projectElement.append(nameSpan, renameButton, deleteButton);
+
         container.appendChild(projectElement);
     });
-}
+	}
 
   static renderTodos(todos, container) {
     container.innerHTML = '';
@@ -67,26 +81,42 @@ class DOMHandler {
 			this.editTodoDescription = document.getElementById('edit-todo-description');
 			this.editTodoDueDate = document.getElementById('edit-todo-due-date');
 			this.editTodoPriority = document.getElementById('edit-todo-priority');
+			this.renameProjectModal = document.getElementById('rename-project-modal');
+			this.renameProjectForm = document.getElementById('rename-project-form');
+			this.renameProjectInput = document.getElementById('rename-project-input');
   }
 
-  bindProjectEvents(container, selectHandler) {
-    container.addEventListener('click', (e) => {
-        const projectItem = e.target.closest('.project-item');
-        if (projectItem) {
-            this.currentProjectId = projectItem.dataset.projectId;
-            
-            // Remove 'selected' class from all projects
-            container.querySelectorAll('.project-item').forEach(item => {
-                item.classList.remove('selected');
-            });
-            
-            // Add 'selected' class to the clicked project
-            projectItem.classList.add('selected');
-            
-            selectHandler(this.currentProjectId);
-        }
-    });
-}
+  bindProjectEvents(container, selectHandler, deleteHandler) {
+		container.addEventListener('click', (e) => {
+				const projectItem = e.target.closest('.project-item');
+				if (!projectItem) return;
+
+				const projectId = projectItem.dataset.projectId;
+
+				if (e.target.classList.contains('rename-project')) {
+						const project = this.projectManager.getProject(projectId);
+						this.showRenameProjectModal(projectId, project.name);
+				} else if (e.target.classList.contains('delete-project')) {
+						if (confirm('Are you sure you want to delete this project?')) {
+								deleteHandler(projectId);
+						}
+				} else {
+						this.currentProjectId = projectId;
+						container.querySelectorAll('.project-item').forEach(item => {
+								item.classList.remove('selected');
+						});
+						projectItem.classList.add('selected');
+						selectHandler(this.currentProjectId);
+				}
+		});
+
+		// Close modal when clicking on the close button or outside the modal
+		window.onclick = (event) => {
+				if (event.target == this.renameProjectModal || event.target.classList.contains('close')) {
+						this.hideRenameProjectModal();
+				}
+		};
+	}
 
   bindTodoEvents(container, toggleHandler, editHandler, deleteHandler) {
     container.addEventListener('change', (e) => {
@@ -185,6 +215,25 @@ class DOMHandler {
     const closeBtn = this.editTodoModal.querySelector('.close');
     closeBtn.addEventListener('click', () => this.hideEditTodoModal());
   }
+
+	showRenameProjectModal(projectId, currentName) {
+		this.renameProjectInput.value = currentName;
+		this.renameProjectModal.style.display = 'block';
+		this.renameProjectForm.onsubmit = (e) => {
+				e.preventDefault();
+				const newName = this.renameProjectInput.value;
+				if (newName) {
+						this.projectManager.renameProject(projectId, newName);
+						this.hideRenameProjectModal();
+						DOMRenderer.renderProjects(this.projectManager.projects, document.getElementById('projects'), this.currentProjectId);
+				}
+		};
+	}
+
+	hideRenameProjectModal() {
+			this.renameProjectModal.style.display = 'none';
+	}
+
 }
 
 export { DOMRenderer, DOMHandler };
