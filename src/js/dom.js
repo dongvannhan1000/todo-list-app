@@ -28,7 +28,7 @@ class DOMRenderer {
           dueDate.textContent = `Due: ${todo.dueDate || 'Not set'}`;
           
           const priority = document.createElement('p');
-          priority.textContent = `Priority: ${todo.priority}`;
+          priority.textContent = `Priority: ${todo.priority.toUpperCase()}`;
           priority.classList.add(`priority-${todo.priority}`);
           
           const checkbox = document.createElement('input');
