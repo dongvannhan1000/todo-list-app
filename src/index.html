@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Todo List</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>Modern Todo List</h1>
+    </header>
+    <main>
+        <aside class="project-panel">
+            <h2>Projects</h2>
+            <div id="projects" class="project-list"></div>
+            <form id="new-project-form" class="new-project-form">
+                <input type="text" id="project-name" placeholder="New Project Name" required>
+                <button type="submit">Add Project</button>
+            </form>
+        </aside>
+        <section class="todo-panel">
+            <h2>Todos</h2>
+            <div id="todos" class="todo-list"></div>
+            <form id="new-todo-form" class="new-todo-form">
+                <input type="text" id="todo-title" placeholder="Todo Title" required>
+                <textarea id="todo-description" placeholder="Description"></textarea>
+                <input type="date" id="todo-due-date">
+                <select id="todo-priority">
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+                <button type="submit">Add Todo</button>
+            </form>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 Modern Todo List. All rights reserved.</p>
+    </footer>
+</body>
+</html>
