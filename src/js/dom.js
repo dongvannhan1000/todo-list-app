@@ -1,15 +1,18 @@
 // dom.js
 class DOMRenderer {
-  static renderProjects(projects, container) {
-      container.innerHTML = '';
-      projects.forEach(project => {
-          const projectElement = document.createElement('div');
-          projectElement.textContent = project.name;
-          projectElement.dataset.projectId = project.id;
-          projectElement.classList.add('project-item');
-          container.appendChild(projectElement);
-      });
-  }
+  static renderProjects(projects, container, selectedProjectId) {
+    container.innerHTML = '';
+    projects.forEach(project => {
+        const projectElement = document.createElement('div');
+        projectElement.textContent = project.name;
+        projectElement.dataset.projectId = project.id;
+        projectElement.classList.add('project-item');
+        if (project.id === selectedProjectId) {
+            projectElement.classList.add('selected');
+        }
+        container.appendChild(projectElement);
+    });
+}
 
   static renderTodos(todos, container) {
     container.innerHTML = '';
@@ -67,20 +70,23 @@ class DOMHandler {
   }
 
   bindProjectEvents(container, selectHandler) {
-      container.addEventListener('click', (e) => {
-          const projectItem = e.target.closest('.project-item');
-          if (projectItem) {
-              this.currentProjectId = projectItem.dataset.projectId;
-              selectHandler(this.currentProjectId);
-              
-              // Highlight selected project
-              container.querySelectorAll('.project-item').forEach(item => {
-                  item.classList.remove('selected');
-              });
-              projectItem.classList.add('selected');
-          }
-      });
-  }
+    container.addEventListener('click', (e) => {
+        const projectItem = e.target.closest('.project-item');
+        if (projectItem) {
+            this.currentProjectId = projectItem.dataset.projectId;
+            
+            // Remove 'selected' class from all projects
+            container.querySelectorAll('.project-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Add 'selected' class to the clicked project
+            projectItem.classList.add('selected');
+            
+            selectHandler(this.currentProjectId);
+        }
+    });
+}
 
   bindTodoEvents(container, toggleHandler, editHandler, deleteHandler) {
     container.addEventListener('change', (e) => {
@@ -111,14 +117,19 @@ class DOMHandler {
   }
 
   bindNewProjectForm(form, nameInput) {
-      form.addEventListener('submit', (e) => {
-          e.preventDefault();
-          const projectName = nameInput.value;
-          this.projectManager.createProject(projectName);
-          DOMRenderer.renderProjects(this.projectManager.projects, document.getElementById('projects'));
-          nameInput.value = '';
-      });
-  }
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const projectName = nameInput.value;
+        const newProject = this.projectManager.createProject(projectName);
+        this.currentProjectId = newProject.id;
+        DOMRenderer.renderProjects(this.projectManager.projects, document.getElementById('projects'), this.currentProjectId);
+        nameInput.value = '';
+        
+        // Render todos of the new project (which will be empty)
+        const todoContainer = document.getElementById('todos');
+        DOMRenderer.renderTodos(newProject.getAllTodos(), todoContainer);
+    });
+}
 
   bindNewTodoForm(form, titleInput, descriptionInput, dueDateInput, priorityInput) {
       form.addEventListener('submit', (e) => {

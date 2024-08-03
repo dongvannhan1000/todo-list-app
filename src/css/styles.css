@@ -42,7 +42,6 @@ header {
 }
 
 .project-list div:hover, .todo-list div:hover {
-  background-color: var(--background-color);
   transform: translateY(-2px);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
