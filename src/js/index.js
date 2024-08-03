@@ -30,17 +30,26 @@ domHandler.bindProjectEvents(projectContainer, (projectId) => {
 
 const todoContainer = document.getElementById('todos');
 domHandler.bindTodoEvents(todoContainer,
-    (projectId, todoId) => {
-        const project = projectManager.getProject(projectId);
-        const todo = project.getTodo(todoId);
-        todo.toggleComplete();
-        projectManager.saveProjects();
-        DOMRenderer.renderTodos(project.getAllTodos(), todoContainer);
-    },
-    (projectId, todoId) => {
-        // Implement edit functionality
-        console.log('Edit todo:', todoId, 'in project:', projectId);
-    }
+  (projectId, todoId) => {
+      const project = projectManager.getProject(projectId);
+      const todo = project.getTodo(todoId);
+      todo.toggleComplete();
+      projectManager.saveProjects();
+      DOMRenderer.renderTodos(project.getAllTodos(), todoContainer);
+  },
+  (projectId, todoId) => {
+      // Implement edit functionality
+      console.log('Edit todo:', todoId, 'in project:', projectId);
+      // Hiển thị form chỉnh sửa với dữ liệu hiện tại của todo
+      // Sau khi chỉnh sửa, cập nhật todo và render lại
+  },
+  (projectId, todoId) => {
+      // Implement delete functionality
+      const project = projectManager.getProject(projectId);
+      project.removeTodo(todoId);
+      projectManager.saveProjects();
+      DOMRenderer.renderTodos(project.getAllTodos(), todoContainer);
+  }
 );
 
 // Bind form events

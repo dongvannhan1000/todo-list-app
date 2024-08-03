@@ -12,33 +12,45 @@ class DOMRenderer {
   }
 
   static renderTodos(todos, container) {
-      container.innerHTML = '';
-      todos.forEach(todo => {
-          const todoElement = document.createElement('div');
-          todoElement.classList.add('todo-item');
-          todoElement.dataset.todoId = todo.id;
-          
-          const title = document.createElement('h3');
-          title.textContent = todo.title;
-          
-          const description = document.createElement('p');
-          description.textContent = todo.description;
-          
-          const dueDate = document.createElement('p');
-          dueDate.textContent = `Due: ${todo.dueDate || 'Not set'}`;
-          
-          const priority = document.createElement('p');
-          priority.textContent = `Priority: ${todo.priority.toUpperCase()}`;
-          priority.classList.add(`priority-${todo.priority}`);
-          
-          const checkbox = document.createElement('input');
-          checkbox.type = 'checkbox';
-          checkbox.checked = todo.completed;
-          
-          todoElement.append(checkbox, title, description, dueDate, priority);
-          container.appendChild(todoElement);
-      });
-  }
+    container.innerHTML = '';
+    todos.forEach(todo => {
+        const todoElement = document.createElement('div');
+        todoElement.classList.add('todo-item');
+        todoElement.dataset.todoId = todo.id;
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = todo.completed;
+        checkbox.classList.add('todo-checkbox');
+        
+        const title = document.createElement('span');
+        title.textContent = todo.title;
+        title.classList.add('todo-title');
+        
+        const description = document.createElement('span');
+        description.textContent = todo.description;
+        description.classList.add('todo-description');
+        
+        const dueDate = document.createElement('span');
+        dueDate.textContent = todo.dueDate || 'Not set';
+        dueDate.classList.add('todo-due-date');
+        
+        const priority = document.createElement('span');
+        priority.textContent = todo.priority.toUpperCase();
+        priority.classList.add('todo-priority', `priority-${todo.priority}`);
+        
+        const editButton = document.createElement('button');
+        editButton.textContent = 'Edit';
+        editButton.classList.add('edit-todo');
+        
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.classList.add('delete-todo');
+        
+        todoElement.append(checkbox, title, description, dueDate, priority, editButton, deleteButton);
+        container.appendChild(todoElement);
+    });
+}
 }
 
 class DOMHandler {
@@ -64,22 +76,27 @@ class DOMHandler {
       });
   }
 
-  bindTodoEvents(container, toggleHandler, editHandler) {
-      container.addEventListener('change', (e) => {
-          if (e.target.type === 'checkbox') {
-              const todoItem = e.target.closest('.todo-item');
-              const todoId = todoItem.dataset.todoId;
-              toggleHandler(this.currentProjectId, todoId);
-          }
-      });
+  bindTodoEvents(container, toggleHandler, editHandler, deleteHandler) {
+    container.addEventListener('change', (e) => {
+        if (e.target.type === 'checkbox') {
+            const todoItem = e.target.closest('.todo-item');
+            const todoId = todoItem.dataset.todoId;
+            toggleHandler(this.currentProjectId, todoId);
+        }
+    });
 
-      container.addEventListener('click', (e) => {
-          if (e.target.classList.contains('edit-todo')) {
-              const todoItem = e.target.closest('.todo-item');
-              const todoId = todoItem.dataset.todoId;
-              editHandler(this.currentProjectId, todoId);
-          }
-      });
+    container.addEventListener('click', (e) => {
+        const todoItem = e.target.closest('.todo-item');
+        if (!todoItem) return;
+        
+        const todoId = todoItem.dataset.todoId;
+        
+        if (e.target.classList.contains('edit-todo')) {
+            editHandler(this.currentProjectId, todoId);
+        } else if (e.target.classList.contains('delete-todo')) {
+            deleteHandler(this.currentProjectId, todoId);
+        }
+    });
   }
 
   bindNewProjectForm(form, nameInput) {
