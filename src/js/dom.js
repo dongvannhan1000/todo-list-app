@@ -58,6 +58,12 @@ class DOMHandler {
       this.projectManager = projectManager;
       this.todoManager = todoManager;
       this.currentProjectId = null;
+      this.editTodoModal = document.getElementById('edit-todo-modal');
+			this.editTodoForm = document.getElementById('edit-todo-form');
+			this.editTodoTitle = document.getElementById('edit-todo-title');
+			this.editTodoDescription = document.getElementById('edit-todo-description');
+			this.editTodoDueDate = document.getElementById('edit-todo-due-date');
+			this.editTodoPriority = document.getElementById('edit-todo-priority');
   }
 
   bindProjectEvents(container, selectHandler) {
@@ -86,17 +92,22 @@ class DOMHandler {
     });
 
     container.addEventListener('click', (e) => {
-        const todoItem = e.target.closest('.todo-item');
-        if (!todoItem) return;
-        
-        const todoId = todoItem.dataset.todoId;
-        
-        if (e.target.classList.contains('edit-todo')) {
-            editHandler(this.currentProjectId, todoId);
-        } else if (e.target.classList.contains('delete-todo')) {
-            deleteHandler(this.currentProjectId, todoId);
-        }
-    });
+			const todoItem = e.target.closest('.todo-item');
+			if (!todoItem) return;
+			
+			const todoId = todoItem.dataset.todoId;
+			
+			if (e.target.classList.contains('edit-todo')) {
+				const project = this.projectManager.getProject(this.currentProjectId);
+				const todo = project.getTodo(todoId);
+				this.showEditTodoModal(todo);
+				this.bindEditTodoForm((updatedTodo) => {
+					editHandler(this.currentProjectId, todoId, updatedTodo);
+				});
+			} else if (e.target.classList.contains('delete-todo')) {
+				deleteHandler(this.currentProjectId, todoId);
+			}
+		});
   }
 
   bindNewProjectForm(form, nameInput) {
@@ -133,6 +144,35 @@ class DOMHandler {
       // This method should be implemented to return the id of the currently selected project
       // For example, you could store it in a data attribute on a container element
       return document.querySelector('.current-project').dataset.projectId;
+  }
+
+	showEditTodoModal(todo) {
+    this.editTodoTitle.value = todo.title;
+    this.editTodoDescription.value = todo.description;
+    this.editTodoDueDate.value = todo.dueDate || '';
+    this.editTodoPriority.value = todo.priority;
+    this.editTodoModal.style.display = 'block';
+  }
+
+  hideEditTodoModal() {
+    this.editTodoModal.style.display = 'none';
+  }
+
+  bindEditTodoForm(submitHandler) {
+    this.editTodoForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const updatedTodo = {
+        title: this.editTodoTitle.value,
+        description: this.editTodoDescription.value,
+        dueDate: this.editTodoDueDate.value,
+        priority: this.editTodoPriority.value
+      };
+      submitHandler(updatedTodo);
+      this.hideEditTodoModal();
+    });
+
+    const closeBtn = this.editTodoModal.querySelector('.close');
+    closeBtn.addEventListener('click', () => this.hideEditTodoModal());
   }
 }
 

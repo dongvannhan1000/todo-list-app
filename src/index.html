@@ -38,7 +38,24 @@
                   </select>
                   <button type="submit">Add Todo</button>
                 </div>
-              </form>
+            </form>
+            <div id="edit-todo-modal" class="modal">
+                <div class="modal-content">
+                  <span class="close">&times;</span>
+                  <h2>Edit Todo</h2>
+                  <form id="edit-todo-form">
+                    <input type="text" id="edit-todo-title" required>
+                    <textarea id="edit-todo-description"></textarea>
+                    <input type="date" id="edit-todo-due-date">
+                    <select id="edit-todo-priority">
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                    </select>
+                    <button type="submit">Save Changes</button>
+                  </form>
+                </div>
+              </div>
         </section>
     </main>
     <footer>

@@ -37,11 +37,12 @@ domHandler.bindTodoEvents(todoContainer,
       projectManager.saveProjects();
       DOMRenderer.renderTodos(project.getAllTodos(), todoContainer);
   },
-  (projectId, todoId) => {
-      // Implement edit functionality
-      console.log('Edit todo:', todoId, 'in project:', projectId);
-      // Hiển thị form chỉnh sửa với dữ liệu hiện tại của todo
-      // Sau khi chỉnh sửa, cập nhật todo và render lại
+  (projectId, todoId, updatedTodo) => {
+    const project = projectManager.getProject(projectId);
+    const todo = project.getTodo(todoId);
+    todo.update(updatedTodo);
+    projectManager.saveProjects();
+    DOMRenderer.renderTodos(project.getAllTodos(), todoContainer);
   },
   (projectId, todoId) => {
       // Implement delete functionality
