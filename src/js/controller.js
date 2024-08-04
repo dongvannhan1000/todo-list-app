@@ -45,7 +45,12 @@ class ProjectManager {
           project.name = newName;
           this.saveProjects();
       }
-  }
+    }
+
+    deleteProject(projectId) {
+        this.projects = this.projects.filter(project => project.id !== projectId);
+        this.saveProjects();
+    }
 }
 
 class TodoManager {
